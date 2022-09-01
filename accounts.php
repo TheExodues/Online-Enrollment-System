@@ -1,45 +1,53 @@
 <?php
 require_once(LIB_PATH.DS.'database.php');
-class Schedule {
-	protected static  $tblname = "tblschedule";
+class User {
+	protected static  $tblname = "useraccounts";
 
 	function dbfields () {
 		global $mydb;
 		return $mydb->getfieldsononetable(self::$tblname);
-
 	}
-	function listofschedule(){
+	function listofuser(){
 		global $mydb;
 		$mydb->setQuery("SELECT * FROM ".self::$tblname);
 		return $cur;
 	}
-	function find_schedule($id="",$name=""){
+ 
+	function find_user($id="",$user_name=""){
 		global $mydb;
 		$mydb->setQuery("SELECT * FROM ".self::$tblname." 
-			WHERE schedID = {$id} OR sched_time = '{$name}'");
+			WHERE ACCOUNT_ID = {$id} OR ACCOUNT_USERNAME = '{$user_name}'");
 		$cur = $mydb->executeQuery();
 		$row_count = $mydb->num_rows($cur);
 		return $row_count;
 	}
-
-	function find_all_schedule($name=""){
+	static function userAuthentication($U_USERNAME,$h_pass){
 		global $mydb;
-		$mydb->setQuery("SELECT * FROM ".self::$tblname." 
-			WHERE sched_time = '{$name}'");
+		$mydb->setQuery("SELECT * FROM `useraccounts` WHERE `ACCOUNT_USERNAME` = '". $U_USERNAME ."' and `ACCOUNT_PASSWORD` = '". $h_pass ."'");
 		$cur = $mydb->executeQuery();
-		$row_count = $mydb->num_rows($cur);
-		return $row_count;
+		if($cur==false){
+			die(mysql_error());
+		}
+		$row_count = $mydb->num_rows($cur);//get the number of count
+		 if ($row_count == 1){
+		 $user_found = $mydb->loadSingleResult();
+		 	$_SESSION['ACCOUNT_ID']   		= $user_found->ACCOUNT_ID;
+		 	$_SESSION['ACCOUNT_NAME']      	= $user_found->ACCOUNT_NAME;
+		 	$_SESSION['ACCOUNT_USERNAME'] 	= $user_found->ACCOUNT_USERNAME;
+		 	$_SESSION['ACCOUNT_PASSWORD'] 		= $user_found->ACCOUNT_PASSWORD;
+		 	$_SESSION['ACCOUNT_TYPE'] 		= $user_found->ACCOUNT_TYPE;
+		   return true;
+		 }else{
+		 	return false;
+		 }
 	}
-	 
-	function single_schedule($id=""){
+	function single_user($id=""){
 			global $mydb;
 			$mydb->setQuery("SELECT * FROM ".self::$tblname." 
-				Where schedID= '{$id}' LIMIT 1");
+				Where ACCOUNT_ID= '{$id}' LIMIT 1");
 			$cur = $mydb->loadSingleResult();
 			return $cur;
 	}
-
-	 
 	/*---Instantiation of Object dynamically---*/
 	static function instantiate($record) {
 		$object = new self;
@@ -121,7 +129,7 @@ class Schedule {
 		}
 		$sql = "UPDATE ".self::$tblname." SET ";
 		$sql .= join(", ", $attribute_pairs);
-		$sql .= " WHERE schedID=". $id;
+		$sql .= " WHERE ACCOUNT_ID=". $id;
 	  $mydb->setQuery($sql);
 	 	if(!$mydb->executeQuery()) return false; 	
 		
@@ -130,7 +138,7 @@ class Schedule {
 	public function delete($id=0) {
 		global $mydb;
 		  $sql = "DELETE FROM ".self::$tblname;
-		  $sql .= " WHERE schedID=". $id;
+		  $sql .= " WHERE ACCOUNT_ID=". $id;
 		  $sql .= " LIMIT 1 ";
 		  $mydb->setQuery($sql);
 		  

@@ -9,7 +9,7 @@ class backup_restore {
 	 * @string
 	 * @access private
 	 */
-	private $path = 'backup';
+	private $path = '';
 
 	/**
 	 * The backup type, must be either complete, file or database
@@ -67,8 +67,6 @@ class backup_restore {
  		$this->database = $database;
  		$this->user = $dbUser;
  		$this->pass = $dbPass ;
- 		// $this->conn;
-		 $this->Connect();
 		$this->file_path = ($path) ? $path : dirname(__FILE__) ;
 		
 	}
@@ -79,13 +77,8 @@ class backup_restore {
 	 * @access private
 	 */
 	private function Connect() {
- 		 $conn = mysqli_connect($this->host, $this->user, $this->pass,$this->database);
-		 if(!$conn){
-			 echo "Database connection failed. ".mysqli_error($conn);
-			 exit;
-		 }
- 		$this->conn = $conn;
-
+ 		 mysql_connect($this->host, $this->user, $this->pass) or die(mysql_error());
+		 mysql_select_db($this->database) or die(mysql_error());
  	}
 	
     /************************** SET GET METHOD FOR FILE AND PATH ******************/	
@@ -215,26 +208,22 @@ class backup_restore {
 	
 
 		$this->Connect();
-	    $sqlname = $this->get_database_dump_filepath();
-		
-		file_put_contents($sqlname,"");
 
-//	    mysqli_set_charset( DB_CHARSET, $this->db );
+//	    mysql_set_charset( DB_CHARSET, $this->db );
 
 	    // Begin new backup of MySql
-	    $tables = mysqli_query($this->conn, 'SHOW TABLES' );
+	    $tables = mysql_query( 'SHOW TABLES' );
 
-	    $sql_file  = "# WordPress : buffernow.com MySQL database backup\n";
+	    $sql_file  = "# MySQL database backup\n";
 	    $sql_file .= "#\n";
 	    $sql_file .= "# Generated: " . date( 'l j. F Y H:i T' ) . "\n";
 	    $sql_file .= "# Hostname: " . $this->host . "\n";
 	    $sql_file .= "# Database: " . $this->sql_backquote( $this->database ) . "\n";
 	    $sql_file .= "# --------------------------------------------------------\n";
-		$tbl_res =array_column($tables->fetch_all(),0);
-		// var_dump($tbl_res[0]);
-	    for ( $i = 0; $i < mysqli_num_rows( $tables ); $i++ ) {
 
-	    	$curr_table = $tbl_res[$i];
+	    for ( $i = 0; $i < mysql_num_rows( $tables ); $i++ ) {
+
+	    	$curr_table = mysql_tablename( $tables, $i );
 
 	    	// Create the SQL statements
 	    	$sql_file .= "# --------------------------------------------------------\n";
@@ -244,19 +233,24 @@ class backup_restore {
 	    	$this->make_sql( $sql_file, $curr_table );
 
 	    }
-	return $this->database_dump_filename;
+	 
+	 // Read the backup file into string then remove the file
+	 $finalbackup = file_get_contents($this->database_dump_filename);
+	 unlink($this->database_dump_filename);
+	return $finalbackup;
 
 	}
 	
+
 	//Restore
- 	public function restore() {
+ 	public function restore($file = NULL) {
 		
 			$this->Connect();
- 	
-			if (file_exists($this->get_database_dump_filepath()))
- 			$lines = file($this->get_database_dump_filepath(), FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+		    $file = (empty($file))? $this->get_database_dump_filepath():$file;
+			if (file_exists($file))
+ 			$lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 			else {
-			return "File is missing ,Please make <a href=database.php?process=backup>backup</a> or upload database";
+			return "File is missing ,Please upload a backup using this form or to " . $this->get_database_dump_filename();
 			exit;
 			}
 			
@@ -289,12 +283,12 @@ class backup_restore {
  			//	$line = substr($line, 0, -1);
 				
 				//// here we go
-				$result = @mysqli_query($this->conn,$line) or die(mysqli_error($this->conn).$line);		
+				$result = @mysql_query($line) or die(mysql_error().$line);		
  				////
 				
 				if (!$result ) {				
 							
- 				$this->msg =  mysqli_error($this->conn) ;	die;
+ 				$this->msg =  mysql_error() ;	die;
 				return $this->msg;
 					break;
 				
@@ -303,7 +297,7 @@ class backup_restore {
 				
  			}
 			
-			$this->msg ="Sucessfully restored!";			
+			$this->msg ="Sucessfullly restored";			
 			
 			
 		return $this->msg;
@@ -343,16 +337,16 @@ class backup_restore {
 
 	    // Get table structure
 	    $query = 'SHOW CREATE TABLE ' . $this->sql_backquote( $table );
-	    $result = mysqli_query($this->conn, $query );
+	    $result = mysql_query( $query );
 
 	    if ( $result ) {
 
-	    	if ( mysqli_num_rows( $result ) > 0 ) {
-	    		$sql_create_arr = mysqli_fetch_array( $result );
+	    	if ( mysql_num_rows( $result ) > 0 ) {
+	    		$sql_create_arr = mysql_fetch_array( $result );
 	    		$sql_file .= $sql_create_arr[1];
 	    	}
 
-	    	mysqli_free_result( $result );
+	    	mysql_free_result( $result );
 	    	$sql_file .= ' ;';
 
 	    }
@@ -361,11 +355,11 @@ class backup_restore {
 
 	    // Get table contents
 	    $query = 'SELECT * FROM ' . $this->sql_backquote( $table );
-	    $result = mysqli_query($this->conn, $query);
+	    $result = mysql_query( $query);
 
 	    if ( $result ) {
-	    	$fields_cnt = mysqli_num_fields( $result );
-	    	$rows_cnt   = mysqli_num_rows( $result );
+	    	$fields_cnt = mysql_num_fields( $result );
+	    	$rows_cnt   = mysql_num_rows( $result );
 	    }
 
 	    // Comment in SQL-file
@@ -376,20 +370,18 @@ class backup_restore {
 	    $sql_file .= "#\n";
 
 	    // Checks whether the field is an integer or not
-		$_field = $result->fetch_field();
-		// var_dump($_field);
-		$j = 0;
-			// for ( $j = 0; $j < $fields_cnt; $j++ ) {
-				while ($frow = $result->fetch_field()){
-	    	$field_set[$j] = $this->sql_backquote( $frow->name );
-	    	$type = $frow->type;
+	    for ( $j = 0; $j < $fields_cnt; $j++ ) {
 
-	    	if ( $type === 'tinyint' || $type === 'smallint' || $type === 'mediumint' || $type === 'int' || $type === 'bigint'  || $type === 'timestamp')
+	    	$field_set[$j] = $this->sql_backquote( mysql_field_name( $result, $j ) );
+	    	$type = mysql_field_type( $result, $j );
+
+	    	//if ( $type === 'tinyint' || $type === 'smallint' || $type === 'mediumint' || $type === 'int' || $type === 'bigint'  || $type === 'timestamp')
+		# Remove timestamp to avoid error while restore
+	    	if ( $type === 'tinyint' || $type === 'smallint' || $type === 'mediumint' || $type === 'int' || $type === 'bigint')
 	    		$field_num[$j] = true;
 
 	    	else
 	    		$field_num[$j] = false;
-			$j++;
 
 	    }
 
@@ -400,7 +392,7 @@ class backup_restore {
 	    $current_row = 0;
 	    $batch_write = 0;
 
-	    while ( $row = mysqli_fetch_row( $result ) ) {
+	    while ( $row = mysql_fetch_row( $result ) ) {
 
 	    	$current_row++;
 
@@ -413,7 +405,7 @@ class backup_restore {
 	    		} elseif ( $row[$j] === '0' || $row[$j] !== '' ) {
 
 	    		    // a number
-	    		    if ( isset($field_num[$j]) && $field_num[$j] )
+	    		    if ( $field_num[$j] )
 	    		    	$values[] = $row[$j];
 
 	    		    else
@@ -441,7 +433,7 @@ class backup_restore {
 
 	    }
 
-	    mysqli_free_result( $result );
+	    mysql_free_result( $result );
 
 	    // Create footer/closing comment in SQL-file
 	    $sql_file .= "\n";
@@ -449,7 +441,7 @@ class backup_restore {
 	    $sql_file .= "# End of data contents of table " . $table . "\n";
 	    $sql_file .= "# --------------------------------------------------------\n";
 	    $sql_file .= "\n";
-		// echo $sql_file;
+
 		$this->write_sql( $sql_file );
 
 	}
@@ -466,6 +458,7 @@ class backup_restore {
 
 	    // Actually write the sql file
 	    if ( is_writable( $sqlname ) || ! file_exists( $sqlname ) ) {
+
 	    	if ( ! $handle = @fopen( $sqlname, 'a' ) )
 	    		return;
 

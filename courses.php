@@ -1,40 +1,40 @@
 <?php
 require_once(LIB_PATH.DS.'database.php');
-class Schedule {
-	protected static  $tblname = "tblschedule";
+class Course {
+	protected static  $tblname = "course";
 
 	function dbfields () {
 		global $mydb;
 		return $mydb->getfieldsononetable(self::$tblname);
 
 	}
-	function listofschedule(){
+	function listofcourse(){
 		global $mydb;
 		$mydb->setQuery("SELECT * FROM ".self::$tblname);
 		return $cur;
 	}
-	function find_schedule($id="",$name=""){
+	function find_course($id="",$name=""){
 		global $mydb;
 		$mydb->setQuery("SELECT * FROM ".self::$tblname." 
-			WHERE schedID = {$id} OR sched_time = '{$name}'");
+			WHERE COURSE_ID = {$id} OR COURSE_NAME = '{$name}'");
 		$cur = $mydb->executeQuery();
 		$row_count = $mydb->num_rows($cur);
 		return $row_count;
-	}
+	} 
 
-	function find_all_schedule($name=""){
+	function find_all_course($name=""){
 		global $mydb;
 		$mydb->setQuery("SELECT * FROM ".self::$tblname." 
-			WHERE sched_time = '{$name}'");
+			WHERE COURSE_NAME = '{$name}'");
 		$cur = $mydb->executeQuery();
 		$row_count = $mydb->num_rows($cur);
 		return $row_count;
 	}
 	 
-	function single_schedule($id=""){
+	function single_course($id=""){
 			global $mydb;
 			$mydb->setQuery("SELECT * FROM ".self::$tblname." 
-				Where schedID= '{$id}' LIMIT 1");
+				Where COURSE_ID= '{$id}' LIMIT 1");
 			$cur = $mydb->loadSingleResult();
 			return $cur;
 	}
@@ -121,7 +121,7 @@ class Schedule {
 		}
 		$sql = "UPDATE ".self::$tblname." SET ";
 		$sql .= join(", ", $attribute_pairs);
-		$sql .= " WHERE schedID=". $id;
+		$sql .= " WHERE COURSE_ID=". $id;
 	  $mydb->setQuery($sql);
 	 	if(!$mydb->executeQuery()) return false; 	
 		
@@ -130,7 +130,7 @@ class Schedule {
 	public function delete($id=0) {
 		global $mydb;
 		  $sql = "DELETE FROM ".self::$tblname;
-		  $sql .= " WHERE schedID=". $id;
+		  $sql .= " WHERE COURSE_ID=". $id;
 		  $sql .= " LIMIT 1 ";
 		  $mydb->setQuery($sql);
 		  

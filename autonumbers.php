@@ -1,45 +1,39 @@
 <?php
 require_once(LIB_PATH.DS.'database.php');
-class Schedule {
-	protected static  $tblname = "tblschedule";
+class Autonumber {
+	protected static  $tblname = "tblauto";
 
 	function dbfields () {
 		global $mydb;
 		return $mydb->getfieldsononetable(self::$tblname);
 
 	}
-	function listofschedule(){
+ 
+	function single_autonumber($autokey=""){
 		global $mydb;
-		$mydb->setQuery("SELECT * FROM ".self::$tblname);
+		$mydb->setQuery("SELECT * FROM ".self::$tblname." 
+			WHERE  AUTOKEY= '{$autokey}' LIMIT 1");
+		$cur = $mydb->loadSingleResult();
 		return $cur;
 	}
-	function find_schedule($id="",$name=""){
-		global $mydb;
-		$mydb->setQuery("SELECT * FROM ".self::$tblname." 
-			WHERE schedID = {$id} OR sched_time = '{$name}'");
-		$cur = $mydb->executeQuery();
-		$row_count = $mydb->num_rows($cur);
-		return $row_count;
-	}
-
-	function find_all_schedule($name=""){
-		global $mydb;
-		$mydb->setQuery("SELECT * FROM ".self::$tblname." 
-			WHERE sched_time = '{$name}'");
-		$cur = $mydb->executeQuery();
-		$row_count = $mydb->num_rows($cur);
-		return $row_count;
-	}
 	 
-	function single_schedule($id=""){
+	function set_autonumber($id=""){
 			global $mydb;
-			$mydb->setQuery("SELECT * FROM ".self::$tblname." 
-				Where schedID= '{$id}' LIMIT 1");
+			$mydb->setQuery("SELECT concat(`autostart`, `autoend`) AS 'AUTO' FROM ".self::$tblname." 
+				Where ID= '{$id}' LIMIT 1");
 			$cur = $mydb->loadSingleResult();
 			return $cur;
 	}
 
-	 
+	function stud_autonumber(){
+			global $mydb;
+			$mydb->setQuery("SELECT concat(`autostart`,`autoend`) AS 'AUTO' FROM ".self::$tblname." 
+				Where ID= 3 LIMIT 1");
+			$cur = $mydb->loadSingleResult();
+			return $cur;
+	}
+
+
 	/*---Instantiation of Object dynamically---*/
 	static function instantiate($record) {
 		$object = new self;
@@ -112,7 +106,7 @@ class Schedule {
 	  }
 	}
 
-	public function update($id=0) {
+	public function update($id="") {
 	  global $mydb;
 		$attributes = $this->sanitized_attributes();
 		$attribute_pairs = array();
@@ -121,16 +115,34 @@ class Schedule {
 		}
 		$sql = "UPDATE ".self::$tblname." SET ";
 		$sql .= join(", ", $attribute_pairs);
-		$sql .= " WHERE schedID=". $id;
+		$sql .= " WHERE ID='{$id}'";
 	  $mydb->setQuery($sql);
 	 	if(!$mydb->executeQuery()) return false; 	
 		
 	}
 
-	public function delete($id=0) {
+	public function auto_update($id="") {
+	  global $mydb;
+		$sql = "UPDATE ".self::$tblname." SET ";
+		$sql .= "autoend = autoend + incrementvalue";
+		$sql .= " WHERE ID='{$id}'";
+	  $mydb->setQuery($sql);
+	 	if(!$mydb->executeQuery())  return false; 	
+		
+	}
+	public function studauto_update() {
+	  global $mydb;
+		$sql = "UPDATE ".self::$tblname." SET ";
+		$sql .= "autoend = autoend + incrementvalue";
+		$sql .= " WHERE ID=3";
+	  $mydb->setQuery($sql);
+	 	if(!$mydb->executeQuery())  return false; 	
+		
+	}
+	public function delete($id="") {
 		global $mydb;
 		  $sql = "DELETE FROM ".self::$tblname;
-		  $sql .= " WHERE schedID=". $id;
+		  $sql .= " WHERE ID='{$id}'";
 		  $sql .= " LIMIT 1 ";
 		  $mydb->setQuery($sql);
 		  

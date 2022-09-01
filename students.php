@@ -1,42 +1,69 @@
 <?php
 require_once(LIB_PATH.DS.'database.php');
-class Schedule {
-	protected static  $tblname = "tblschedule";
+class Student {
+	protected static  $tblname = "tblstudent";
 
 	function dbfields () {
 		global $mydb;
 		return $mydb->getfieldsononetable(self::$tblname);
 
 	}
-	function listofschedule(){
+	function listofstudent(){
 		global $mydb;
 		$mydb->setQuery("SELECT * FROM ".self::$tblname);
 		return $cur;
 	}
-	function find_schedule($id="",$name=""){
+	function find_student($id="",$name=""){
 		global $mydb;
 		$mydb->setQuery("SELECT * FROM ".self::$tblname." 
-			WHERE schedID = {$id} OR sched_time = '{$name}'");
+			WHERE IDNO = {$id} OR LNAME = '{$name}'");
 		$cur = $mydb->executeQuery();
 		$row_count = $mydb->num_rows($cur);
 		return $row_count;
 	}
 
-	function find_all_schedule($name=""){
+	function find_all_student($lname="",$fname="",$mname=""){
 		global $mydb;
 		$mydb->setQuery("SELECT * FROM ".self::$tblname." 
-			WHERE sched_time = '{$name}'");
+			WHERE LNAME = '{$lname}' AND FNAME= '{$fname}' AND MNAME='{$mname}'");
 		$cur = $mydb->executeQuery();
 		$row_count = $mydb->num_rows($cur);
 		return $row_count;
 	}
 	 
-	function single_schedule($id=""){
+	function single_student($id=""){
 			global $mydb;
 			$mydb->setQuery("SELECT * FROM ".self::$tblname." 
-				Where schedID= '{$id}' LIMIT 1");
+				Where IDNO= '{$id}' LIMIT 1");
 			$cur = $mydb->loadSingleResult();
 			return $cur;
+	}
+	function studAuthentication($U_USERNAME,$h_pass){
+		global $mydb;
+		$mydb->setQuery("SELECT * FROM `tblstudent` WHERE `IDNO`='".$U_USERNAME."' OR `ACC_USERNAME` = '". $U_USERNAME ."' AND `ACC_PASSWORD` = '". $h_pass ."'");
+		$cur = $mydb->executeQuery();
+		if($cur==false){
+			die(mysql_error());
+		}
+		$row_count = $mydb->num_rows($cur);//get the number of count
+		 if ($row_count == 1){
+		 $student_found = $mydb->loadSingleResult();
+		 	$_SESSION['IDNO']   		= $student_found->IDNO; 
+		 	$_SESSION['ACC_USERNAME'] 	= $student_found->ACC_USERNAME;
+		 	$_SESSION['ACC_PASSWORD'] 	= $student_found->ACC_PASSWORD; 
+			$_SESSION['FNAME']			= $student_found->FNAME; 
+			$_SESSION['LNAME']			= $student_found->LNAME; 
+			$_SESSION['MI']				= $student_found->MNAME; 
+			$_SESSION['PADDRESS']		= $student_found->HOME_ADD; 
+			$_SESSION['COURSEID']		= $student_found->COURSE_ID; 
+			$_SESSION['SEMESTER']		= $student_found->SEMESTER;  
+			$_SESSION['CONTACT']		= $student_found->CONTACT_NO;  
+			$_SESSION['SY']				= $student_found->SYEAR;  
+			$_SESSION['COURSELEVEL']	= $student_found->YEARLEVEL;
+		   return true;
+		 }else{
+		 	return false;
+		 }
 	}
 
 	 
@@ -121,7 +148,7 @@ class Schedule {
 		}
 		$sql = "UPDATE ".self::$tblname." SET ";
 		$sql .= join(", ", $attribute_pairs);
-		$sql .= " WHERE schedID=". $id;
+		$sql .= " WHERE IDNO=". $id;
 	  $mydb->setQuery($sql);
 	 	if(!$mydb->executeQuery()) return false; 	
 		
@@ -130,7 +157,7 @@ class Schedule {
 	public function delete($id=0) {
 		global $mydb;
 		  $sql = "DELETE FROM ".self::$tblname;
-		  $sql .= " WHERE schedID=". $id;
+		  $sql .= " WHERE IDNO=". $id;
 		  $sql .= " LIMIT 1 ";
 		  $mydb->setQuery($sql);
 		  

@@ -1,44 +1,44 @@
 <?php
 require_once(LIB_PATH.DS.'database.php');
-class Schedule {
-	protected static  $tblname = "tblschedule";
+class StudentSubjects {
+	protected static  $tblname = "studentsubjects";
 
 	function dbfields () {
 		global $mydb;
 		return $mydb->getfieldsononetable(self::$tblname);
 
 	}
-	function listofschedule(){
+	function listofStudentSubjects(){
 		global $mydb;
 		$mydb->setQuery("SELECT * FROM ".self::$tblname);
 		return $cur;
 	}
-	function find_schedule($id="",$name=""){
+	function find_StudentSubjects($id="",$name=""){
 		global $mydb;
 		$mydb->setQuery("SELECT * FROM ".self::$tblname." 
-			WHERE schedID = {$id} OR sched_time = '{$name}'");
+			WHERE STUDSUBJ_ID = {$id} OR LNAME = '{$name}'");
 		$cur = $mydb->executeQuery();
 		$row_count = $mydb->num_rows($cur);
 		return $row_count;
 	}
 
-	function find_all_schedule($name=""){
+	function find_all_StudentSubjects($name=""){
 		global $mydb;
 		$mydb->setQuery("SELECT * FROM ".self::$tblname." 
-			WHERE sched_time = '{$name}'");
+			WHERE LNAME = '{$name}'");
 		$cur = $mydb->executeQuery();
 		$row_count = $mydb->num_rows($cur);
 		return $row_count;
 	}
 	 
-	function single_schedule($id=""){
+	function single_StudentSubjects($id=""){
 			global $mydb;
 			$mydb->setQuery("SELECT * FROM ".self::$tblname." 
-				Where schedID= '{$id}' LIMIT 1");
+				Where STUDSUBJ_ID= '{$id}' LIMIT 1");
 			$cur = $mydb->loadSingleResult();
 			return $cur;
 	}
-
+	 
 	 
 	/*---Instantiation of Object dynamically---*/
 	static function instantiate($record) {
@@ -121,7 +121,22 @@ class Schedule {
 		}
 		$sql = "UPDATE ".self::$tblname." SET ";
 		$sql .= join(", ", $attribute_pairs);
-		$sql .= " WHERE schedID=". $id;
+		$sql .= " WHERE STUDSUBJ_ID=". $id;
+	  $mydb->setQuery($sql);
+	 	if(!$mydb->executeQuery()) return false; 	
+		
+	}
+
+	public function updateSubject($sid=0,$idno=0) {
+	  global $mydb;
+		$attributes = $this->sanitized_attributes();
+		$attribute_pairs = array();
+		foreach($attributes as $key => $value) {
+		  $attribute_pairs[] = "{$key}='{$value}'";
+		}
+		$sql = "UPDATE ".self::$tblname." SET ";
+		$sql .= join(", ", $attribute_pairs);
+		$sql .= " WHERE SUBJ_ID=". $sid." AND IDNO=".$idno;
 	  $mydb->setQuery($sql);
 	 	if(!$mydb->executeQuery()) return false; 	
 		
@@ -130,7 +145,7 @@ class Schedule {
 	public function delete($id=0) {
 		global $mydb;
 		  $sql = "DELETE FROM ".self::$tblname;
-		  $sql .= " WHERE schedID=". $id;
+		  $sql .= " WHERE STUDSUBJ_ID=". $id;
 		  $sql .= " LIMIT 1 ";
 		  $mydb->setQuery($sql);
 		  
