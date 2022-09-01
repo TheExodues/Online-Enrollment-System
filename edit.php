@@ -3,47 +3,42 @@
       redirect(web_root."admin/index.php");
      }
 
-  @$INST_ID = $_GET['id'];
-    if($INST_ID==''){
+  @$USERID = $_GET['id'];
+    if($USERID==''){
   redirect("index.php");
 }
- 
-
-  $subject = New Instructor();
-  $inst = $subject->single_instructor($INST_ID);
+  $user = New User();
+  $singleuser = $user->single_user($USERID);
 
 ?> 
 
  <form class="form-horizontal span6" action="controller.php?action=edit" method="POST">
 
-    
-           <div class="row">
-         <div class="col-lg-12">
-            <h1 class="page-header">Edit Instructor</h1>
-          </div>
-        </div> 
+          <fieldset>
+            <legend> Update User Account</legend>
                    
-                  <!--   <div class="form-group">
+                    <!-- <div class="form-group">
                     <div class="col-md-8">
                       <label class="col-md-4 control-label" for=
-                      "INST_ID">ID:</label>
+                      "user_id">User Id:</label> -->
 
-                      <div class="col-md-8"> -->
+                      <!-- <div class="col-md-8"> -->
                         
-                         <input class="form-control input-sm" id="INST_ID" name="INST_ID" placeholder=
-                            "Instructor Full Name" type="hidden" value="<?php echo $inst->INST_ID ; ?>">
-                     <!--  </div>
+                         <input class="form-control input-sm" id="USERID" name="USERID" placeholder=
+                            "Account Id" type="Hidden" value="<?php echo $singleuser->ACCOUNT_ID; ?>">
+                   <!--    </div>
                     </div>
-                  </div> -->
-                   <div class="form-group">
+                  </div>      -->      
+                  
+                  <div class="form-group">
                     <div class="col-md-8">
                       <label class="col-md-4 control-label" for=
-                      "INST_NAME">Name:</label>
+                      "U_NAME">Name:</label>
 
                       <div class="col-md-8">
-                        
-                         <input class="form-control input-sm" id="INST_NAME" name="INST_NAME" placeholder=
-                            "Instructor Full Name" type="text" value="<?php echo $inst->INST_NAME ; ?>">
+                        <input name="deptid" type="hidden" value="">
+                         <input class="form-control input-sm" id="U_NAME" name="U_NAME" placeholder=
+                            "Account Name" type="text" value="<?php echo $singleuser->ACCOUNT_NAME; ?>">
                       </div>
                     </div>
                   </div>
@@ -51,12 +46,12 @@
                   <div class="form-group">
                     <div class="col-md-8">
                       <label class="col-md-4 control-label" for=
-                      "INST_MAJOR">Major:</label>
+                      "U_USERNAME">Username:</label>
 
                       <div class="col-md-8">
-                        
-                         <input class="form-control input-sm" id="INST_MAJOR" name="INST_MAJOR" placeholder=
-                            "Major" type="text" value="<?php echo $inst->INST_MAJOR ; ?>">
+                        <input name="deptid" type="hidden" value="">
+                         <input class="form-control input-sm" id="U_USERNAME" name="U_USERNAME" placeholder=
+                            "Username" type="text" value="<?php echo $singleuser->ACCOUNT_USERNAME; ?>">
                       </div>
                     </div>
                   </div>
@@ -64,15 +59,32 @@
                   <div class="form-group">
                     <div class="col-md-8">
                       <label class="col-md-4 control-label" for=
-                      "INST_CONTACT">Contact No.:</label>
+                      "U_PASS">Password:</label>
 
                       <div class="col-md-8">
-                        
-                         <input class="form-control input-sm" id="INST_CONTACT" name="INST_CONTACT" placeholder=
-                            "Contact Number." type="text" value="<?php echo $inst->INST_CONTACT ; ?>" required>
+                        <input name="deptid" type="hidden" value="">
+                         <input class="form-control input-sm" id="U_PASS" name="U_PASS" placeholder=
+                            "Account Password" type="Password" value="" required>
                       </div>
                     </div>
-                  </div> 
+                  </div>
+                  <div class="form-group">
+                    <div class="col-md-8">
+                      <label class="col-md-4 control-label" for=
+                      "U_ROLE">Role:</label>
+
+                      <div class="col-md-8">
+                       <select class="form-control input-sm" name="U_ROLE" id="U_ROLE">
+                          <option value="Administrator"  <?php echo ($singleuser->ACCOUNT_TYPE=='Administrator') ? 'selected="true"': '' ; ?>>Administrator</option>
+                          <!-- <option value="Staff" <?php echo ($singleuser->ACCOUNT_TYPE=='Staff') ? 'selected="true"': '' ; ?>>Staff</option>  -->
+                          <!-- <option value="Customer">Customer</option> -->
+                              <option value="Registrar" <?php echo ($singleuser->ACCOUNT_TYPE=='Registrar') ? 'selected="true"': '' ; ?>>Registrar</option>
+                     <!-- <option value="Encoder" <?php echo ($singleuser->ACCOUNT_TYPE=='Encoder') ? 'selected="true"': '' ; ?>>Encoder</option> -->
+                        </select> 
+                      </div>
+                    </div>
+                  </div>
+
             
              <div class="form-group">
                     <div class="col-md-8">
@@ -80,15 +92,35 @@
                       "idno"></label>
 
                       <div class="col-md-8">
-                       <button class="btn btn-primary btn-sm" name="save" type="submit" ><span class="fa fa-save fw-fa"></span>  Save</button> 
-                          <!-- <a href="index.php" class="btn btn-info"><span class="fa fa-arrow-circle-left fw-fa"></span></span>&nbsp;<strong>List of Users</strong></a> -->
-                       </div>
+                         <button class="btn btn-primary " name="save" type="submit" ><span class="fa fa-save fw-fa"></span> Save</button>
+                          <!-- <a href="index.php" class="btn btn-info"><span class="fa fa-arrow-circle-left fw-fa"></span>&nbsp;<strong>List of Users</strong></a> -->
+                      </div>
                     </div>
                   </div>
 
+              
+          </fieldset> 
 
+        <div class="form-group">
+                <div class="rows">
+                  <div class="col-md-6">
+                    <label class="col-md-6 control-label" for=
+                    "otherperson"></label>
+
+                    <div class="col-md-6">
+                   
+                    </div>
+                  </div>
+
+                  <div class="col-md-6" align="right">
+                   
+
+                   </div>
+                  
+              </div>
+              </div>
           
-  </form>
+        </form>
       
 
-     
+        </div><!--End of container-->

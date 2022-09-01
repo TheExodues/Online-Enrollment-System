@@ -11,19 +11,31 @@
 
            <div class="row">
          <div class="col-lg-12">
-            <h1 class="page-header">Add New Instructor</h1>
+            <h1 class="page-header">Add New User</h1>
           </div>
-        </div> 
+          <!-- /.col-lg-12 -->
+       </div> 
                    
+                    <!-- <div class="form-group">
+                    <div class="col-md-8">
+                      <label class="col-md-4 control-label" for=
+                      "user_id">User Id:</label>
+
+                      <div class="col-md-8"> --> 
+                        <!--  <input class="form-control input-sm" id="user_id" name="user_id" placeholder=
+                            "Account Id" type="hidden" value="<?php echo $res->AUTO; ?>"> -->
+                    <!--   </div>
+                    </div>
+                  </div> -->           
                    <div class="form-group">
                     <div class="col-md-8">
                       <label class="col-md-4 control-label" for=
-                      "INST_NAME">Name:</label>
+                      "U_NAME">Name:</label>
 
                       <div class="col-md-8">
-                        
-                         <input class="form-control input-sm" id="INST_NAME" name="INST_NAME" placeholder=
-                            "Instructor Full Name" type="text" value="">
+                        <input name="deptid" type="hidden" value="">
+                         <input class="form-control input-sm" id="U_NAME" name="U_NAME" placeholder=
+                            "Account Name" type="text" value="">
                       </div>
                     </div>
                   </div>
@@ -31,12 +43,12 @@
                   <div class="form-group">
                     <div class="col-md-8">
                       <label class="col-md-4 control-label" for=
-                      "INS_MAJOR">Major:</label>
+                      "U_USERNAME">Username:</label>
 
                       <div class="col-md-8">
-                        
-                         <input class="form-control input-sm" id="INST_MAJOR" name="INST_MAJOR" placeholder=
-                            "Major" type="text" value="">
+                        <input name="deptid" type="hidden" value="">
+                         <input class="form-control input-sm" id="U_USERNAME" name="U_USERNAME" placeholder=
+                            "Username" type="text" value="">
                       </div>
                     </div>
                   </div>
@@ -44,15 +56,32 @@
                   <div class="form-group">
                     <div class="col-md-8">
                       <label class="col-md-4 control-label" for=
-                      "INST_CONTACT">Contact No.:</label>
+                      "U_PASS">Password:</label>
 
                       <div class="col-md-8">
-                        
-                         <input class="form-control input-sm" id="INST_CONTACT" name="INST_CONTACT" placeholder=
-                            "Contact Number." type="text" value="" required>
+                        <input name="deptid" type="hidden" value="">
+                         <input class="form-control input-sm" id="U_PASS" name="U_PASS" placeholder=
+                            "Account Password" type="Password" value="" required>
                       </div>
                     </div>
-                  </div> 
+                  </div>
+                  <div class="form-group">
+                    <div class="col-md-8">
+                      <label class="col-md-4 control-label" for=
+                      "U_ROLE">Role:</label>
+
+                      <div class="col-md-8">
+                       <select class="form-control input-sm" name="U_ROLE" id="U_ROLE">
+                          <option value="Administrator"  >Administrator</option>
+                          <!-- <option value="Staff"  >Staff</option>  -->
+                          <option value="Registrar">Registrar</option>
+                          <!-- <option value="Encoder" >Encoder</option> -->
+                        </select> 
+                      </div>
+                    </div>
+                  </div>
+
+
             
              <div class="form-group">
                     <div class="col-md-8">
@@ -66,7 +95,25 @@
                     </div>
                   </div>
 
-    
+               
+        <div class="form-group">
+                <div class="rows">
+                  <div class="col-md-6">
+                    <label class="col-md-6 control-label" for=
+                    "otherperson"></label>
+
+                    <div class="col-md-6">
+                   
+                    </div>
+                  </div>
+
+                  <div class="col-md-6" align="right">
+                   
+
+                   </div>
+                  
+              </div>
+              </div>
           
         </form>
        

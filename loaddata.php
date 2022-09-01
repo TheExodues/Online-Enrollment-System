@@ -9,7 +9,7 @@
 
           <?php 
           require_once ("../../include/initialize.php");
-            $mydb->setQuery("SELECT * FROM `subject` WHERE COURSE_ID=".$_POST['id'] );
+            $mydb->setQuery("SELECT * FROM `subject` WHERE COURSE_ID=".$_POST['id'] . " AND SEMESTER = '" .$_POST['SEMESTER']. "'");
             $cur = $mydb->loadResultList();
 
             foreach ($cur as $result) {
@@ -27,3 +27,5 @@
       </div>
     </div>
   </div>
+
+ 

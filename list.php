@@ -4,13 +4,12 @@
      }
 
 ?>
-
-<div class="row">
-     <div class="col-lg-12">
-       	 <div class="col-lg-8">
-            <h2 class="page-header">List of Instructors <a href="index.php?view=add" class="btn btn-primary btn-xs  ">  <i class="fa fa-plus-circle fw-fa"></i> New</a>  </h2>
+ <div class="row">
+      <div class="col-lg-12">
+       	 <div class="col-lg-6">
+            <h1 class="page-header">List of Users  <a href="index.php?view=add" class="btn btn-primary btn-xs  ">  <i class="fa fa-plus-circle fw-fa"></i> New</a>  </h1>
        		</div>
-       		<div class="col-lg-4" >
+       		<div class="col-lg-6" >
        			<img style="float:right;" src="<?php echo web_root; ?>img/school_seal_100x100.jpg" >
        		</div>
        		</div>
@@ -22,34 +21,42 @@
 				
 				  <thead>
 				  	<tr>
-				  		<th>ID</th>
-				  		<th>Name</th>
-				  		<th>Major</th>  
-				  		<th>Contact No.</th> 
-				  		<th width="14%" >Action</th>
+				  		<!-- <th>#</th> -->
+				  		<th>
+				  		 <!-- <input type="checkbox" name="chkall" id="chkall" onclick="return checkall('selector[]');">  -->
+				  		 Account Name</th>
+				  		<th>Username</th>
+				  		<th>Role</th>
+				  		<th width="10%" >Action</th>
 				 
 				  	</tr>	
 				  </thead> 
 				  <tbody>
-				  	<?php  //`IDNO`, `FNAME`, `LNAME`, `MNAME`, `SEX`, `BDAY`, `BPLACE`,
-				  	// `STATUS`, `AGE`, `NATIONALITY`, `RELIGION`, `CONTACT_NO`, `HOME_ADD`, `EMAIL`, `student_status`
-				  		$mydb->setQuery("SELECT * FROM `tblinstructor`");
-
+				  	<?php 
+				  		// $mydb->setQuery("SELECT * 
+								// 			FROM  `tblusers` WHERE TYPE != 'Customer'");
+				  		$mydb->setQuery("SELECT * 
+											FROM  `useraccounts`");
 				  		$cur = $mydb->loadResultList();
 
 						foreach ($cur as $result) {
-						 
 				  		echo '<tr>';
 				  		// echo '<td width="5%" align="center"></td>';
-				  		echo '<td>' . $result->INST_ID.'</a></td>';
-				  		echo '<td>'. $result->INST_NAME.'</td>';
-				  		echo '<td>'. $result->INST_MAJOR.'</td>'; 
-				  		echo '<td>'. $result->INST_CONTACT.'</td>'; 
-				  		 
-				  		echo '<td align="center" > <a title="Edit" href="index.php?view=edit&id='.$result->INST_ID.'"  class="btn btn-primary btn-xs  ">Edit <span class="fa fa-pencil fw-fa"></span></a>
-				  					 <a title="Delete" href="controller.php?action=delete&id='.$result->INST_ID.'" class="btn btn-danger btn-xs" >Delete <span class="fa fa-trash fw-fa"></span> </a>
+				  		echo '<td>' . $result->ACCOUNT_NAME.'</a></td>';
+				  		echo '<td>'. $result->ACCOUNT_USERNAME.'</td>';
+				  		echo '<td>'. $result->ACCOUNT_TYPE.'</td>';
+				  		If($result->ACCOUNT_ID==$_SESSION['ACCOUNT_ID'] || $result->ACCOUNT_TYPE=='MainAdministrator' || $result->ACCOUNT_TYPE=='Administrator') {
+				  			$active = "Disabled";
+
+				  		}else{
+				  			$active = "";
+
+				  		}
+
+				  		echo '<td align="center" > <a title="Edit" href="index.php?view=edit&id='.$result->ACCOUNT_ID.'"  class="btn btn-primary btn-xs  ">  <span class="fa fa-edit fw-fa"></span></a>
+				  					 <a title="Delete" href="controller.php?action=delete&id='.$result->ACCOUNT_ID.'" class="btn btn-danger btn-xs" '.$active.'><span class="fa fa-trash-o fw-fa"></span> </a>
 				  					 </td>';
-				  		 echo '</tr>';
+				  		echo '</tr>';
 				  	} 
 				  	?>
 				  </tbody>

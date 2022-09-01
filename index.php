@@ -5,7 +5,7 @@ if(!isset($_SESSION['ACCOUNT_ID'])){
 }
 
 $view = (isset($_GET['view']) && $_GET['view'] != '') ? $_GET['view'] : '';
- $title="Instructor"; 
+ $title="Users"; 
  $header=$view; 
 switch ($view) {
 	case 'list' :
@@ -15,7 +15,6 @@ switch ($view) {
 	case 'add' :
 		$content    = 'add.php';		
 		break;
- 
 
 	case 'edit' :
 		$content    = 'edit.php';		
